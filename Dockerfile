@@ -1,36 +1,17 @@
-# FROM node:22.1.0
+# Use lightweight Node.js Alpine image
+FROM node:20-alpine
 
-# WORKDIR /app
-
-# # Copy only needed files
-# COPY package*.json ./
-# COPY tsconfig*.json ./
-# COPY src ./src
-
-# # Copy Prisma folder only if it exists by copying everything, relying on .dockerignore
-# COPY . .
-
-# RUN npm install
-
-# RUN if [ -f "./prisma/schema.prisma" ]; then npx prisma generate; else echo "Skipping prisma generate"; fi
-
-# RUN npm run build
-
-# EXPOSE 3000
-
-# CMD ["npm", "start"]
-# Use official Node.js LTS image
-FROM node:22.1.0
-
-# Set working directory
+# Set working directory inside container
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Copy only package files first (better caching)
 COPY package*.json ./
 COPY tsconfig*.json ./
+
+# Install dependencies
 RUN npm install
 
-# Copy entire project (includes src, prisma, etc.)
+# Copy all source code (src, prisma, etc.)
 COPY . .
 
 # Generate Prisma client if schema exists
@@ -39,8 +20,8 @@ RUN if [ -f "./prisma/schema.prisma" ]; then npx prisma generate; else echo "Ski
 # Build TypeScript
 RUN npm run build
 
-# Expose port used by the app (4000 as per your .env)
+# Expose the port your app runs on (change if needed)
 EXPOSE 4000
 
-# Run the app
+# Start the app
 CMD ["npm", "start"]

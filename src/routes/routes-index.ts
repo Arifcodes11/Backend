@@ -9,6 +9,10 @@ import { webClientUrl } from "../../environment";
 
 export const allRoutes = new Hono();
 
+// ✅ Health check endpoint
+allRoutes.get("/health", (c) => c.text("✅ Backend is running fine!"));
+
+// Enable CORS
 allRoutes.use(
   cors({
     origin: webClientUrl,
@@ -20,6 +24,7 @@ allRoutes.use(
   })
 );
 
+// API routes
 allRoutes.route("/authentications", authenticationsRoutes);
 allRoutes.route("/users", usersRoutes);
 allRoutes.route("/posts", postsRoutes);
